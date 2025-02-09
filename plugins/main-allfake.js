@@ -49,8 +49,8 @@ global.colab2 = 'Niño Piña'
 global.colab3 = 'Legendary'
 
 //Ids channel
-global.idchannel = '120363365444927738@newsletter'
-global.canalIdM = ["120363365444927738@newsletter", "120363365444927738@newsletter"]
+global.idchannel = '120363357113516650@newsletter'
+global.canalIdM = ["120363357113516650@newsletter", "120363357113516650@newsletter"]
 global.canalNombreM = [" 𝑻𝒆𝒄𝒏𝒐-𝑩𝒐𝒚ᚐ", "✧┊┋◟🚀𝑻𝒆𝒄𝒏𝒐-𝑩𝒐𝒕🚀◞┊┋✧"]
 global.channelRD = await getRandomChannel()
 
@@ -73,12 +73,12 @@ global.waittt = '🕒 *𝗘𝘀𝗽𝗲𝗿𝗮 𝗨𝗻 𝗠𝗼𝗺𝗲𝗻�
 global.waitttt = '🕒 *𝗘𝘀𝗽𝗲𝗿𝗮 𝗨𝗻 𝗠𝗼𝗺𝗲𝗻𝘁𝗼, 𝗦𝗼𝘆 𝗟𝗲𝗻𝘁𝗮 ...*';
 
 //Enlaces
-var canal = 'https://whatsapp.com/channel/0029VapSIvR5EjxsD1B7hU3T'  
-let canal2 = 'https://whatsapp.com/channel/0029VavzewJLikg78gILRn1o'
-var git = 'https://github.com/The-King-Destroy' 
-var youtube = 'https://youtube.com/@user-the-king-destroy' 
-var github = 'https://github.com/The-King-Destroy/Yuki_Suou-Bot' 
-let correo = 'thekingdestroy507@gmail.com'
+var canal = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'  
+let canal2 = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'
+var git = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804' 
+var youtube = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804' 
+var github = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804' 
+let correo = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'
 
 global.redes = [canal, canal2, git, youtube, github, correo].getRandom()
 
