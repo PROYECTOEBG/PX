@@ -22,16 +22,16 @@ global.prems = []
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.packname = `[ ⚡Sticker Maker`
-global.author = '_Agust - Ai_]'
-global.stickpack = '© Agust - Ai'
-global.stickauth = 'by Agust'
-global.wm = 'Agust ⚡'
-global.dev = '© Powered By August ⚡'
-global.wait = '⚡ *Aɢᴜᴀʀᴅᴇ ᴜɴ ᴍᴏᴍᴇɴᴛᴏ, sᴏʏ ʟᴇɴᴛ𝙾... ฅ^•ﻌ•^ฅ\n\n> _Bot Agust-Ai_⚡*'
-global.botname = '[ ⚡ Bot Agust - Ai⚡ ]'
-global.textbot = `⚡Bot Agust - Ai⚡`
+global.author = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.stickpack = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.stickauth = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.wm = '⚡𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.dev = ' ⚡𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.wait = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.botname = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
+global.textbot = `⚡𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫`
 global.listo = '*Aqui tiene ฅ^•ﻌ•^ฅ*'
-global.namechannel = '⚡Agust - Ai⚡'
+global.namechannel = '𝗣𝗿𝗼𝘆𝗲𝗰𝘁𝗼𝗫'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
@@ -40,9 +40,9 @@ global.imagen2 = fs.readFileSync('./storage/img/Menu2.jpg')
 global.miniurl = fs.readFileSync('./storage/img/miniurl.jpg')
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.group = 'https://whatsapp.com/channel/0029Vb33PrnId7nMjcixDV1p'
-global.canal = 'https://whatsapp.com/channel/0029Vb33PrnId7nMjcixDV1p'
-global.insta = 'https://www.insta.com/https://www.insta.com/sebastian_barboza13'
+global.group = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'
+global.canal = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'
+global.insta = 'https://chat.whatsapp.com/GzqYw7fK9CADEWEtfL6804'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
