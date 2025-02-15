@@ -1,175 +1,473 @@
-import axios from 'axios';
-import cheerio from 'cheerio';
-import qs from 'qs';
+import { youtubedl, youtubedlv2 } from '@bochilteam/scraper'
+import fetch from 'node-fetch'
+import yts from 'yt-search'
+import ytdl from 'ytdl-core'
+import axios from 'axios'
+import ytdlf from "@EdderBot02/ytdlf"
+const LimitAud = 725 * 1024 * 1024 //700MB
+const LimitVid = 425 * 1024 * 1024 //425MB
+let tempStorage = {};
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) {
-    return m.reply(`Ejemplo de uso: *${usedPrefix + command} Joji - Ew*`);
-  }
+const handler = async (m, {conn, command, args, text, usedPrefix}) => {
+if (!text) return conn.reply(m.chat, `${lenguajeGB['smsAvisoMG']()}${mid.smsMalused4}\n*${usedPrefix + command} Billie Eilish - Bellyache*`, m)
+//const tipoDescarga = command === 'play' ? 'audio' : command === 'play2' ? 'video' : command === 'play3' ? 'audio doc' : command === 'play4' ? 'video doc' : '';
+const yt_play = await search(args.join(' '))
+const ytplay2 = await yts(text)
+const texto1 = `
+⌘━─━─≪ *YOUTUBE* ≫─━─━⌘
+★ ${mid.smsYT1}
+★ ${yt_play[0].title}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT15}
+★ ${yt_play[0].ago}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT5}
+★ ${secondString(yt_play[0].duration.seconds)}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★  ${mid.smsYT10}
+★ ${MilesNumber(yt_play[0].views)}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★  ${mid.smsYT2}
+★ ${yt_play[0].author.name}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT4}
+★ ${yt_play[0].url.replace(/^https?:\/\//, '')}
+⌘━━─≪ ${gt} ≫─━━⌘
+`.trim()
 
-  const appleMusic = {
-    search: async (query) => {
-      const url = `https://music.apple.com/us/search?term=${query}`;
-      try {
-        const { data } = await axios.get(url);
-        const $ = cheerio.load(data);
-        const results = [];
-        $('.desktop-search-page .section[data-testid="section-container"] .grid-item').each((index, element) => {
-          const title = $(element).find('.top-search-lockup__primary__title').text().trim();
-          const subtitle = $(element).find('.top-search-lockup__secondary').text().trim();
-          const link = $(element).find('.click-action').attr('href');
-          results.push({ title, subtitle, link });
-        });
-        return results;
-      } catch (error) {
-        console.error("Error en búsqueda de Apple Music:", error.message);
-        return { success: false, message: error.message };
-      }
-    },
-    detail: async (url) => {
-      try {
-        const { data } = await axios.get(url);
-        const $ = cheerio.load(data);
-        const albumTitle = $('h1[data-testid="non-editable-product-title"]').text().trim();
-        const artistName = $('a[data-testid="click-action"]').first().text().trim();
-        const releaseInfo = $('div.headings__metadata-bottom').text().trim();
-        const description = $('div[data-testid="description"]').text().trim();
-        return { albumTitle, artistName, releaseInfo, description };
-      } catch (error) {
-        console.error("Error en detalles de Apple Music:", error.message);
-        return { success: false, message: error.message };
-      }
+tempStorage[m.sender] = { url: yt_play[0].url, title: yt_play[0].title };
+  
+if (m.isWABusiness) {
+await conn.sendFile(m.chat, yt_play[0].thumbnail, 'error.jpg', texto1 + `\n> Para descargas en audio reacciona con "🎶"\n> Para descargar en video reacciona con "📽"`, m, null, fake)
+} else {
+await conn.sendMessage(m.chat, { image: { url: yt_play[0].thumbnail }, caption: gt, footer: texto1,
+buttons: [ {
+buttonId: `.ytmp3 ${yt_play[0].url}`,
+buttonText: {
+displayText: "𓃠 𝗔 𝗨 𝗗 𝗜 𝗢",
+},
+type: 1,
+},
+{
+buttonId: `.ytmp4 ${yt_play[0].url}`,
+buttonText: {
+displayText: "𓃠 𝗩 𝗜 𝗗 𝗘 𝗢",
+},
+type: 1,
+},
+],
+viewOnce: true,
+headerType: 4,
+}, { quoted: m });
+}
+}
+
+handler.before = async (m, { conn }) => {
+const text = m.text.trim().toLowerCase();
+if (!['🎶', 'audio', '📽', 'video'].includes(text)) return;
+const userVideoData = tempStorage[m.sender];
+if (!userVideoData || !userVideoData.url) return conn.reply(m.chat, '❌ NO HAY RESULTADO DE LA APIS, INTENTE DE NUEVO POR FAVOR', m || null);
+try {
+if (text === '🎶' || text === 'audio') {
+await conn.reply(m.chat, lenguajeGB['smsAvisoEG']() + mid.smsAud, fkontak, m || null)
+try {    
+const res = await fetch(`https://api.siputzx.my.id/api/d/ytmp4?url=${userVideoData.url}`);
+let { data } = await res.json();
+await conn.sendMessage(m.chat, { audio: { url: data.dl }, mimetype: 'audio/mpeg' }, { quoted: m ||null });
+} catch (e1) {
+try {    
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${userVideoData.url}`);
+let { result } = await res.json();
+await conn.sendMessage(m.chat, { audio: { url: result.download.url }, mimetype: 'audio/mpeg' }, { quoted: m || null });
+} catch (error) {
+try
+{
+let x=await ytdlf(`${userVideoData.url}`,"mp3");
+await conn.sendMessage(m.chat, { audio: { url:x.downloadUrl }, mimetype: 'audio/mpeg' }, { quoted: m });
+} catch (error) {
+}}}
+} else if (text === '📽' || text === 'video') {
+await conn.reply(m.chat, lenguajeGB['smsAvisoEG']() + mid.smsVid, fkontak, m || null)
+try{
+const res = await fetch(`https://api.siputzx.my.id/api/d/ytmp4?url=${userVideoData.url}`);
+let { data } = await res.json();
+await conn.sendMessage(m.chat, { video: { url: data.dl }, fileName: `video.mp4`, mimetype: 'video/mp4', caption: `⟡ *${userVideoData.title}*\n> ${wm}`}, { quoted: m || null })
+} catch (error){
+let y=await ytdlf(`${userVideoData.url}`,"360");
+await conn.sendMessage(m.chat, { video: { url:y.downloadUrl }, fileName: `video.mp4`, mimetype: 'video/mp4', caption: `⟡ *${userVideoData.title}*\n> ${wm}`}, { quoted: m || null })
+}
+}
+} catch (error) {
+console.error(error);
+} finally {
+delete tempStorage[m.sender];
+}
+}
+handler.command = /^(play|play2)$/i
+//handler.limit = 2
+handler.register = true 
+export default handler
+
+async function search(query, options = {}) {
+const search = await yts.search({query, hl: 'es', gl: 'ES', ...options});
+return search.videos;
+}
+
+function MilesNumber(number) {
+const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+const rep = '$1.';
+const arr = number.toString().split('.');
+arr[0] = arr[0].replace(exp, rep);
+return arr[1] ? arr.join('.') : arr[0];
+}
+
+function secondString(seconds) {
+seconds = Number(seconds);
+const d = Math.floor(seconds / (3600 * 24));
+const h = Math.floor((seconds % (3600 * 24)) / 3600);
+const m = Math.floor((seconds % 3600) / 60);
+const s = Math.floor(seconds % 60);
+const dDisplay = d > 0 ? d + (d == 1 ? ' día, ' : ' días, ') : '';
+const hDisplay = h > 0 ? h + (h == 1 ? ' hora, ' : ' horas, ') : '';
+const mDisplay = m > 0 ? m + (m == 1 ? ' minuto, ' : ' minutos, ') : '';
+const sDisplay = s > 0 ? s + (s == 1 ? ' segundo' : ' segundos') : '';
+return dDisplay + hDisplay + mDisplay + sDisplay;
+}
+  
+const getBuffer = async (url) => {
+try {
+const response = await fetch(url);
+const buffer = await response.arrayBuffer();
+return Buffer.from(buffer);
+} catch (error) {
+console.error("Error al obtener el buffer", error);
+throw new Error("Error al obtener el buffer");
+}}
+
+async function getFileSize(url) {
+try {
+const response = await fetch(url, { method: 'HEAD' })
+const contentLength = response.headers.get('content-length')
+return contentLength ? parseInt(contentLength, 10) : 0
+} catch (error) {
+console.error("Error al obtener el tamaño del archivo", error)
+return 0
+}}
+
+async function fetchInvidious(url) {
+const apiUrl = `https://invidious.io/api/v1/get_video_info`
+const response = await fetch(`${apiUrl}?url=${encodeURIComponent(url)}`)
+const data = await response.json()
+if (data && data.video) {
+const videoInfo = data.video
+return videoInfo
+} else {
+throw new Error("No se pudo obtener información del video desde Invidious")
+}}
+
+function getBestVideoQuality(videoData) {
+const preferredQualities = ['720p', '360p', 'auto']
+const availableQualities = Object.keys(videoData.video)
+for (let quality of preferredQualities) {
+if (availableQualities.includes(quality)) {
+return videoData.video[quality].quality
+}}
+return '360p'
+}
+
+async function ytMp3(url) {
+return new Promise((resolve, reject) => {
+ytdl.getInfo(url).then(async(getUrl) => {
+let result = [];
+for(let i = 0; i < getUrl.formats.length; i++) {
+let item = getUrl.formats[i];
+if (item.mimeType == 'audio/webm; codecs=\"opus\"') {
+let { contentLength } = item;
+let bytes = await bytesToSize(contentLength);
+result[i] = { audio: item.url, size: bytes }}};
+let resultFix = result.filter(x => x.audio != undefined && x.size != undefined) 
+let tiny = await axios.get(`https://tinyurl.com/api-create.php?url=${resultFix[0].audio}`);
+let tinyUrl = tiny.data;
+let title = getUrl.videoDetails.title;
+let thumb = getUrl.player_response.microformat.playerMicroformatRenderer.thumbnail.thumbnails[0].url;
+resolve({ title, result: tinyUrl, result2: resultFix, thumb })}).catch(reject)})};
+
+async function ytMp4(url) {
+return new Promise(async(resolve, reject) => {
+ytdl.getInfo(url).then(async(getUrl) => {
+let result = [];
+for(let i = 0; i < getUrl.formats.length; i++) {
+let item = getUrl.formats[i];
+if (item.container == 'mp4' && item.hasVideo == true && item.hasAudio == true) {
+let { qualityLabel, contentLength } = item;
+let bytes = await bytesToSize(contentLength);
+result[i] = { video: item.url, quality: qualityLabel, size: bytes }}};
+let resultFix = result.filter(x => x.video != undefined && x.size != undefined && x.quality != undefined) 
+let tiny = await axios.get(`https://tinyurl.com/api-create.php?url=${resultFix[0].video}`);
+let tinyUrl = tiny.data;
+let title = getUrl.videoDetails.title;
+let thumb = getUrl.player_response.microformat.playerMicroformatRenderer.thumbnail.thumbnails[0].url;
+resolve({ title, result: tinyUrl, rersult2: resultFix[0].video, thumb })}).catch(reject)})};
+
+
+/*
+import { youtubedl, youtubedlv2 } from '@bochilteam/scraper'
+import fetch from 'node-fetch'
+import yts from 'yt-search'
+import ytdl from 'ytdl-core'
+import axios from 'axios'
+const LimitAud = 725 * 1024 * 1024 //700MB
+const LimitVid = 425 * 1024 * 1024 //425MB
+const handler = async (m, {conn, command, args, text, usedPrefix}) => {
+if (!text) return conn.reply(m.chat, `${lenguajeGB['smsAvisoMG']()}${mid.smsMalused4}\n*${usedPrefix + command} Billie Eilish - Bellyache*`, m)
+const tipoDescarga = command === 'play' ? 'audio' : command === 'play2' ? 'video' : command === 'play3' ? 'audio doc' : command === 'play4' ? 'video doc' : '';
+
+if (command == 'play' || command == 'play2') {
+const yt_play = await search(args.join(' '))
+const ytplay2 = await yts(text)
+const texto1 = `⌘━─━─≪ *YOUTUBE* ≫─━─━⌘
+★ ${mid.smsYT1}
+★ ${yt_play[0].title}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT15}
+★ ${yt_play[0].ago}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT5}
+★ ${secondString(yt_play[0].duration.seconds)}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★  ${mid.smsYT10}
+★ ${MilesNumber(yt_play[0].views)}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★  ${mid.smsYT2}
+★ ${yt_play[0].author.name}
+╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴ ╴
+★ ${mid.smsYT4}
+★ ${yt_play[0].url.replace(/^https?:\/\//, '')}
+⌘━━─≪ ${gt} ≫─━━⌘
+`.trim()
+
+if (m.isWABusiness) {
+await conn.sendFile(m.chat, yt_play[0].thumbnail, 'error.jpg', texto1 + `> Escriben: "audio" para descargar  en audios\n> escriben "video" para en video.`, m, null, fake)
+} else {
+await conn.sendMessage(m.chat, { image: { url: yt_play[0].thumbnail }, caption: texto1, footer: wm,
+buttons: [ {
+buttonId: `.ytmp3 ${yt_play[0].url}`,
+buttonText: {
+displayText: "Audio 🔊",
+},
+type: 1,
+},
+{
+buttonId: `.ytmp4 ${yt_play[0].url}`,
+buttonText: {
+displayText: "Video 🎥",
+},
+type: 1,
+},
+],
+viewOnce: true,
+headerType: 4,
+}, { quoted: m });
+}
+}
+
+if (command == 'audio') {
+try {    
+let searchh = await yts(yt_play[0].url);
+let __res = searchh.all.map(v => v).filter(v => v.type == "video");
+let infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId);
+let ress = await ytdl.chooseFormat(infoo.formats, { filter: 'audioonly' });
+await conn.sendMessage(m.chat, { audio: { url: ress.url }, mimetype: 'audio/mpeg' }, { quoted: m });
+} catch (e1) {
+        try {    
+            const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`);
+            let { result } = await res.json();
+await conn.sendMessage(m.chat, { audio: { url: result.download.url }, mimetype: 'audio/mpeg' }, { quoted: m });
+} catch (e2) {
+   try {    
+const apiUrl = `https://deliriussapi-oficial.vercel.app/download/ytmp4?url=${encodeURIComponent(yt_play[0].url)}`;
+                const apiResponse = await fetch(apiUrl);
+                const delius = await apiResponse.json();
+
+                if (!delius.status) return m.react("❌");
+
+                const downloadUrl = delius.data.download.url;
+                await conn.sendMessage(m.chat, { 
+                    audio: { url: downloadUrl }, 
+                    mimetype: 'audio/mpeg' 
+                }, { quoted: m });
+            } catch (e3) {
+                await m.react('❌');
+                console.log(e3);
+            }
+        }
     }
-  };
+}
 
-  const appledown = {
-    getData: async (urls) => {
-      const url = `https://aaplmusicdownloader.com/api/applesearch.php?url=${urls}`;
-      try {
-        const response = await axios.get(url, {
-          headers: {
-            'Accept': 'application/json, text/javascript, */*; q=0.01',
-            'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'MyApp/1.0',
-            'Referer': 'https://aaplmusicdownloader.com/'
-          }
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Error obteniendo datos de Apple Music Downloader:", error.message);
-        return { success: false, message: error.message };
-      }
-    },
-    getAudio: async (trackName, artist, urlMusic, token) => {
-      const url = 'https://aaplmusicdownloader.com/api/composer/swd.php';
-      const data = {
-        song_name: trackName,
-        artist_name: artist,
-        url: urlMusic,
-        token: token
-      };
-      const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'X-Requested-With': 'XMLHttpRequest',
-        'User-Agent': 'MyApp/1.0',
-        'Referer': 'https://aaplmusicdownloader.com/song.php#'
-      };
-      try {
-        const response = await axios.post(url, qs.stringify(data), { headers });
-        return response.data.dlink;
-      } catch (error) {
-        console.error("Error obteniendo audio de Apple Music:", error.message);
-        return { success: false, message: error.message };
-      }
-    },
-    download: async (urls) => {
-      const musicData = await appledown.getData(urls);
-      if (!musicData || !musicData.name) {
-        return { success: false, message: "No se encontraron datos de música." };
-      }
+if (m.text.toLowerCase() === 'audio' || command == 'audio') {
+try {    
+let searchh = await yts(yt_play[0].url)
+let __res = searchh.all.map(v => v).filter(v => v.type == "video")
+let infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId)
+let ress = await ytdl.chooseFormat(infoo.formats, { filter: 'audioonly' })
+await conn.sendMessage(m.chat, { audio: { url: ress.url}, mimetype: 'audio/mpeg' }, { quoted: m})
+} catch (e1) {
+try {    
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`)
+let { result } = await res.json()
+await conn.sendMessage(m.chat, { audio: { url: await result.download.url }, mimetype: 'audio/mpeg' }, { quoted: m })
+} catch (e1) {
+try {    
+const apiUrl = `https://deliriussapi-oficial.vercel.app/download/ytmp4?url=${encodeURIComponent(yt_play[0].url)}`;
+const apiResponse = await fetch(apiUrl);
+const delius = await apiResponse.json();
+if (!delius.status) {
+return m.react("❌")}
+const downloadUrl = delius.data.download.url;
+await conn.sendMessage(m.chat, { audio: { url: downloadUrl }, mimetype: 'audio/mpeg' }, { quoted: m });
+} catch (e1) {
+try {    
+let q = '128kbps'
+const yt = await youtubedl(yt_play[0].url).catch(() => youtubedlv2(yt_play[0].url))
+await conn.sendFile(m.chat, await yt.audio[q].download(), `${await yt.title}.mp3`, null, m, false, { mimetype: 'audio/mp4' })
+} catch (e) {
+try {
+let d2 = await fetch(`https://exonity.tech/api/ytdlp?apikey=adminsepuh&url=${yt_play[0].url}`)
+let dp = await d2.json()
+const audioUrl = dp.result.audio
+await conn.sendMessage(m.chat, { audio: { url: audioUrl }, mimetype: 'audio/mpeg' }, { quoted: m }) 
+} catch (e) { 
+try {
+let d3 = await fetch(`https://api.dorratz.com/v2/yt-mp3?url=${yt_play[0].url}`)
+await conn.sendMessage(m.chat, { audio: d3, mimetype: 'audio/mp4' }, { quoted: m })   
+} catch (e) { 
+await m.react('❌')
+console.log(e)
+}}}}}}}
 
-      const encodedData = encodeURIComponent(JSON.stringify([
-        musicData.name,
-        musicData.albumname,
-        musicData.artist,
-        musicData.thumb,
-        musicData.duration,
-        musicData.url
-      ]));
-      const url = 'https://aaplmusicdownloader.com/song.php';
-      const headers = {
-        'authority': 'aaplmusicdownloader.com',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'content-type': 'application/x-www-form-urlencoded',
-        'origin': 'https://aaplmusicdownloader.com',
-        'referer': 'https://aaplmusicdownloader.com/',
-        'user-agent': 'MyApp/1.0'
-      };
+if (command == 'video') {
+try {    
+let searchh = await yts(yt_play[0].url)
+let __res = searchh.all.map(v => v).filter(v => v.type == "video")
+let infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId)
+let ress = await ytdl.chooseFormat(infoo.formats, { filter: 'audioonly' })
+await conn.sendMessage(m.chat, { video: { url: await ress.url }, fileName: `${yt_play[0].title}.mp4`, mimetype: 'video/mp4', caption: `⟡ *${yt_play[0].title}*\n> ${wm}`}, { quoted: m })
+} catch (e1) {
+try {    
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`)
+let { result } = await res.json()
+await conn.sendMessage(m.chat, { video: { url: await result.download.url }, fileName: `${yt_play[0].title}.mp4`, mimetype: 'video/mp4', caption: `⟡ *${yt_play[0].title}*\n> ${wm}`}, { quoted: m })
+} catch (e1) {
+try {    
+const apiUrl = `https://deliriussapi-oficial.vercel.app/download/ytmp4?url=${encodeURIComponent(yt_play[0].url)}`;
+const apiResponse = await fetch(apiUrl);
+const delius = await apiResponse.json();
+if (!delius.status) {
+return m.react("❌")}
+const downloadUrl = delius.data.download.url;
+await conn.sendMessage(m.chat, { video: { url: downloadUrl }, fileName: `${yt_play[0].title}.mp4`, mimetype: 'video/mp4', caption: `⟡ *${yt_play[0].title}*\n> ${wm}`}, { quoted: m })
+} catch (e1) {
+try {    
+const yt = await youtubedl(yt_play[0].url).catch(async _ => await youtubedlv2(yt_play[0].url))
+console.log(yt)
+let q = getBestVideoQuality(yt)
+console.log(q)
+await conn.sendMessage(m.chat, { video: { url: await yt.video[q].download() }, fileName: `${await yt.title}.mp4`, mimetype: 'video/mp4', caption: `⟡ *${yt_play[0].title}*\n⟡ \`${q}\` | ${await yt.video[q].fileSizeH}\n> ${wm}`}, { quoted: m })
+} catch (e) {
+await m.react('❌')
+console.log(e)
+}}}}}
 
-      try {
-        const response = await axios.post(url, `data=${encodedData}`, { headers });
-        const $ = cheerio.load(response.data);
-        const trackName = $('td:contains("Track Name:")').next().text();
-        const albumName = $('td:contains("Album:")').next().text();
-        const artist = $('td:contains("Artist:")').next().text();
-        const thumb = $('figure.image img').attr('src');
-        const urlMusic = urls;
-        const token = $('a#download_btn').attr('token');
-        const downloadLink = await appledown.getAudio(trackName, artist, urlMusic, token);
+if (command == 'play3' || command == 'playdoc') {
+try {    
+let searchh = await yts(yt_play[0].url)
+let __res = searchh.all.map(v => v).filter(v => v.type == "video")
+let infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId)
+let ress = await ytdl.chooseFormat(infoo.formats, { filter: 'audioonly' })
+await conn.sendMessage(m.chat, { document: { url: ress.url }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e1) {
+try {    
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`)
+let { result } = await res.json()
+await conn.sendMessage(m.chat, { document: { url: result.download.url }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e1) {
+try {    
+const apiUrl = `${apis}/download/ytmp4?url=${encodeURIComponent(yt_play[0].url)}`;
+const apiResponse = await fetch(apiUrl);
+const delius = await apiResponse.json();
+if (!delius.status) {
+return m.react("❌")}
+const downloadUrl = delius.data.download.url;
+await conn.sendMessage(m.chat, { document: { url: downloadUrl }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e1) {
+try {    
+let q = '128kbps'
+const yt = await youtubedl(yt_play[0].url).catch(async _ => await youtubedlv2(yt_play[0].url))
+const dl_url = await yt.audio[q].download()
+const ttl = await yt.title
+const size = await yt.audio[q].fileSizeH
+await conn.sendMessage(m.chat, { document: { url: dl_url }, mimetype: 'audio/mpeg', fileName: `${ttl}.mp3` }, { quoted: m });
+} catch (e2) {
+try {   
+const downloadUrl = await fetch9Convert(yt_play[0].url); 
+await conn.sendMessage(m.chat, { document: { url: downloadUrl }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e3) {
+try {
+const downloadUrl = await fetchY2mate(yt_play[0].url);
+await conn.sendMessage(m.chat, { document: { url: downloadUrl }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e4) {
+try {
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`)
+const audioData = await res.json()
+if (audioData.status && audioData.result?.downloadUrl) {
+await conn.sendMessage(m.chat, { document: { url: audioData.result.downloadUrl }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+}} catch (e5) {
+try {
+let d2 = await fetch(`https://exonity.tech/api/ytdlp2-faster?apikey=adminsepuh&url=${yt_play[0].url}`);
+let dp = await d2.json();
+const audiop = await getBuffer(dp.result.media.mp3);
+const fileSize = await getFileSize(dp.result.media.mp3);
+await conn.sendMessage(m.chat, { document: { url: audioData.result.downloadUrl }, mimetype: 'audio/mpeg', fileName: `${yt_play[0].title}.mp3` }, { quoted: m });
+} catch (e) {    
+await m.react('❌');
+console.log(e);
+}}}}}}}}}
 
-        return {
-          success: true,
-          name: trackName,
-          albumname: albumName,
-          artist: artist,
-          thumb: thumb,
-          duration: $('td:contains("Duration:")').next().text(),
-          download: downloadLink
-        };
-      } catch (error) {
-        console.error("Error descargando música de Apple Music:", error.message);
-        return { success: false, message: error.message };
-      }
-    }
-  };
+if (command == 'play4' || command == 'playdoc2') {
+try {
+let searchh = await yts(yt_play[0].url)
+let __res = searchh.all.map(v => v).filter(v => v.type == "video")
+let infoo = await ytdl.getInfo('https://youtu.be/' + __res[0].videoId)
+let ress = await ytdl.chooseFormat(infoo.formats, { filter: 'audioonly' })
+await conn.sendMessage(m.chat, { document: { url: ress.url }, fileName: `${yt_play[0].title}.mp4`, caption: `╭━❰  ${wm}  ❱━⬣\n┃ 💜 ${mid.smsYT1}\n┃ ${yt_play[0].title}\n╰━━━━━❰ *𓃠 ${vs}* ❱━━━━⬣`, thumbnail: yt_play[0].thumbnail, mimetype: 'video/mp4' }, { quoted: m })     
+} catch (e1) {
+try {    
+const res = await fetch(`https://api.zenkey.my.id/api/download/ytmp3?apikey=zenkey&url=${yt_play[0].url}`)
+let { result } = await res.json()
+await conn.sendMessage(m.chat, { document: { url: result.download.url }, fileName: `${yt_play[0].title}.mp4`, caption: `╭━❰  ${wm}  ❱━⬣\n┃ 💜 ${mid.smsYT1}\n┃ ${yt_play[0].title}\n╰━━━━━❰ *𓃠 ${vs}* ❱━━━━⬣`, thumbnail: yt_play[0].thumbnail, mimetype: 'video/mp4' }, { quoted: m })     
+} catch (e1) {
+try {    
+const apiUrl = `${apis}/download/ytmp4?url=${encodeURIComponent(yt_play[0].url)}`;
+const apiResponse = await fetch(apiUrl);
+const delius = await apiResponse.json();
+if (!delius.status) return m.react("❌");
+const downloadUrl = delius.data.download.url;
+//const fileSize = await getFileSize(downloadUrl);
+await conn.sendMessage(m.chat, { document: { url: downloadUrl }, fileName: `${yt_play[0].title}.mp4`, caption: `╭━❰  ${wm}  ❱━⬣\n┃ 💜 ${mid.smsYT1}\n┃ ${yt_play[0].title}\n╰━━━━━❰ *𓃠 ${vs}* ❱━━━━⬣`, thumbnail: yt_play[0].thumbnail, mimetype: 'video/mp4' }, { quoted: m })     
+} catch (e1) {
+try {
+let d2 = await fetch(`https://exonity.tech/api/ytdlp2-faster?apikey=adminsepuh&url=${yt_play[0].url}`);
+let dp = await d2.json();
+const audiop = await getBuffer(dp.result.media.mp4);
+await conn.sendMessage(m.chat, { document: { url: audiop }, fileName: `${yt_play[0].title}.mp4`, caption: null, thumbnail: yt_play[0].thumbnail, mimetype: 'video/mp4' }, { quoted: m })     
+} catch (e2) {    
+await m.react('❌');
+console.log(e2);
+}}}}}
+}
+handler.command = /^(play[2-4]?|audio|video|playdoc2?)$/i
+//handler.limit = 2
+handler.register = true 
+export default handler
 
-  conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
-
-  const searchResults = await appleMusic.search(text);
-  if (!searchResults.length) {
-    return m.reply("No se encontraron resultados para tu búsqueda.");
-  }
-
-  const musicData = await appledown.download(searchResults[0].link);
-  if (!musicData.success) {
-    return m.reply(`Error: ${musicData.message}`);
-  }
-
-  const { name, albumname, artist, url, thumb, duration, download } = musicData;
-
-  const doc = {
-    audio: { url: download },
-    mimetype: 'audio/mp4',
-    fileName: `${name}.mp3`,
-    contextInfo: {
-      externalAdReply: {
-        showAdAttribution: true,
-        mediaType: 2,
-        mediaUrl: url,
-        title: name,
-        sourceUrl: url,
-        thumbnail: await (await conn.getFile(thumb)).data
-      }
-    }
-  };
-
-  await conn.sendMessage(m.chat, doc, { quoted: m });
-  await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
-};
-
-handler.help = ['play'];
-handler.tags = ['downloader'];
-handler.command = 'play',/^(applemusicplay|play|song)$/i;
-
-export default handler;
+async function search(query, options = 
