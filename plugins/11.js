@@ -10,7 +10,7 @@ const handler = async (m, {conn, command, args, text, usedPrefix}) => {
 
 if (command == 'play' || command == 'mp3') {
 if (!text) return conn.reply(m.chat, `☠️ *Ingrese el nombre de un video de YouTube*\n\nEjemplo, !${command} Enemy Tommoee Profitt`,  m, rcanal, ); 
-await m.react(rwait);
+
 const yt_play = await search(args.join(' '));
 const ytplay2 = await yts(text);
 const texto1 = `*_𔓕꯭  ꯭ ꯭ ꯭ 𓏲꯭֟፝੭ ꯭⌑Kakaroto Bot⌑꯭ 𓏲꯭֟፝੭ ꯭  ꯭ ꯭ ꯭𔓕_*
@@ -44,7 +44,7 @@ await conn.sendMessage(m.chat, { audio: { url: downloadUrl }, mimetype: 'audio/m
 await m.react(done);
 } catch (e1) {
 try { 
-await m.react(rwait);
+
 let q = '128kbps'
 const yt = await youtubedl(yt_play[0].url).catch(async _ => await youtubedlv2(yt_play[0].url))
 const dl_url = await yt.audio[q].download()
